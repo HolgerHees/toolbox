@@ -146,6 +146,12 @@ function fetchForecast( $auth, $mysql_db, $table, $config, $url, $location, $fro
 
 		$data = fetch($_url,$auth);
 		
+		if( !$data )
+		{
+            echo "unable to parse result from " . $url . "\n";
+            continue;
+		}
+		
 		foreach( $data->{'forecasts'} as $forecast )
 		{
 			$key = $forecast->{'validFrom'};
@@ -195,7 +201,7 @@ function fetchForecast( $auth, $mysql_db, $table, $config, $url, $location, $fro
     {
         if( count($values) != 15 )
         {
-            throw new Exception();
+            throw new Exception("no values");
         }
         
         $insert_values = array( "`datetime`=from_unixtime(".strtotime($values['validFrom']).")" );
