@@ -148,8 +148,7 @@ function fetchForecast( $auth, $mysql_db, $table, $config, $url, $location, $fro
 		
 		if( !$data )
 		{
-            echo "unable to parse result from " . $url . "\n";
-            continue;
+            throw new Exception("unable to parse result from " . $_url );
 		}
 		
 		foreach( $data->{'forecasts'} as $forecast )
@@ -237,7 +236,7 @@ function fetch($url,$auth)
 
 	if( empty( $content ) ) 
 	{
-		echo $url . " has no content" . "\n";
+        throw new Exception( $url . " has no content" );
 	}
 
 	$data = json_decode($content);
