@@ -10,7 +10,7 @@ include dirname(__FILE__) . "/../../_lib/init.php";
 $mysql_db = Setup::getOpenHabMysql();
 
 $location = "13.62140,52.34772";
-$auth = "aG9sZ2VyLmhlZXM6TXpLUFY2eGpQSDdHOXNQbg==";
+$auth = Setup::getWeatherAuth();
 
 $openhab_ip = "127.0.0.1";
 $openhab_port = "8080";
@@ -72,6 +72,8 @@ $collect_forcasts = array(
 
 $current_url = 'https://point-observation.weather.mg/search?locatedAt={location}&validPeriod={period}&fields={fields}&validFrom={from}&validUntil={to}';
 
+$autorization_url = "https://auth.weather.mg/oauth/token";
+
 date_default_timezone_set('Europe/Berlin');
 
 //2018-04-20T11:00:00.000Z
@@ -87,6 +89,8 @@ $to = $date->format('c');
 //echo $from . " - ".$to . "\n";
 
 //fetchCurrent( $auth, $current_config, $current_url, $location, $from, $to );
+
+#getAutorization($autorization_url,$auth);
 
 fetchForecast( $auth, $mysql_db, $table, $forecast_config, $forecast_url, $location, $from, $to );
 
@@ -149,6 +153,11 @@ function fetchForecast( $auth, $mysql_db, $table, $config, $url, $location, $fro
 		if( !$data )
 		{
             throw new Exception("unable to parse result from " . $_url );
+		}
+		
+		if( !isset($data->{'forecasts'}) )
+		{
+			throw new Exception("unable to get forecasts from " . $_url . " " . print_r($data,true) );
 		}
 		
 		foreach( $data->{'forecasts'} as $forecast )
@@ -240,6 +249,32 @@ function fetch($url,$auth)
 	}
 
 	$data = json_decode($content);
+	
+	return $data;
+}
+
+function getAutorization($url,$auth)
+{
+	$c = curl_init();
+	curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+	#curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS,array('grant_type' => 'client_credentials'));
+	
+	
+	$headers = array( 'Authorization: Basic ' . $auth );
+	curl_setopt($c, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($c, CURLOPT_URL, $url );
+	$content = curl_exec($c);
+	curl_close($c);
+
+	if( empty( $content ) ) 
+	{
+        throw new Exception( "Authorisation was not successful" );
+	}
+
+	$data = json_decode($content);
+	
+	print_r($data);
 	
 	return $data;
 }
