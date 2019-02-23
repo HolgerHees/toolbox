@@ -97,8 +97,10 @@ class DBConnectorOpenhab extends DBConnector
         return null;
     }
     
-    public function insertWeatcherData( $sql )
+    public function insertWeatcherData( $insert_values, $update_values )
     {
+        $sql = "INSERT INTO weather_forecast SET " . implode( ",", $insert_values ) . " ON DUPLICATE KEY UPDATE " . implode( ",", $update_values );
+
         $this->query( $sql );
     }
     

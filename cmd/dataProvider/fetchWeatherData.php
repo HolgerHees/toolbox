@@ -1,21 +1,10 @@
 <?php
 include dirname(__FILE__) . "/../../_lib/init.php";
-//include "src/helper/Logger.php";
-//include "src/helper/Request.php";
-//include "src/db/_DBConnector.php";
-//include "src/db/DBConnectorOpenhab.php";
-
-//$today_forecast_url = 'https://point-forecast.weather.mg/search?locatedAt=13.62140,52.34772&validPeriod=PT0S&fields=airTemperatureInCelsius,feelsLikeTemperatureInCelsius,windSpeedInKilometerPerHour';
 
 $mysql_db = Setup::getOpenHabMysql();
-
-$location = "13.62140,52.34772";
+$openhab_rest = Setup::getOpenHabRest();
+$location = Setup::getGeoLocation();
 $auth = Setup::getWeatherAuth();
-
-$openhab_ip = "127.0.0.1";
-$openhab_port = "8080";
-
-$table = "weather_forecast";
 
 $forecast_config = array(
 	'PT0S' => array( 
@@ -90,13 +79,14 @@ $to = $date->format('c');
 
 //fetchCurrent( $auth, $current_config, $current_url, $location, $from, $to );
 
-#getAutorization($autorization_url,$auth);
+$token = getAutorization($autorization_url,$auth);
+if( $token )
+{
+    fetchForecast( $token, $mysql_db, $forecast_config, $forecast_url, $location, $from, $to );
+    updateOpenhab( $collect_forcasts, $mysql_db, $openhab_rest );
+}
 
-fetchForecast( $auth, $mysql_db, $table, $forecast_config, $forecast_url, $location, $from, $to );
-
-updateOpenhab( $collect_forcasts, $mysql_db, $openhab_ip, $openhab_port );
-
-function updateOpenhab( $collect_forcasts, $mysql_db, $openhab_ip, $openhab_port )
+function updateOpenhab( $collect_forcasts, $mysql_db, $openhab_rest )
 {
     foreach( $collect_forcasts as $offset => $collect_fields )
     {
@@ -125,22 +115,19 @@ function updateOpenhab( $collect_forcasts, $mysql_db, $openhab_ip, $openhab_port
         
             //echo "UPDATE: " . $openhab_item . " :" . $fields[$field] . ":\n";
             //echo "http://" . $openhab_ip . ":" . $openhab_port . "/rest/items/" . $openhab_item . "\n";
-            $result = Request::makeRequest( "http://" . $openhab_ip . ":" . $openhab_port . "/rest/items/" . $openhab_item,
-                array( "Accept: application/json", "Content-Type: text/plain" ),
-                $fields[$field],
-                200
-            );
+            $openhab_rest->updateItem($openhab_item,$fields[$field]);
         }
     }
 }
 
-function fetchForecast( $auth, $mysql_db, $table, $config, $url, $location, $from, $to )
+function fetchForecast( $token, $mysql_db, $config, $url, $location, $from, $to )
 {
+    $_location = $location->getLongitude() . "," . $location->getLatitude();
 	$entries = array();
 	foreach( $config as $period => $fields )
 	{
 		$_url = $url;
-		$_url = str_replace("{location}",$location,$_url);
+		$_url = str_replace("{location}",$_location,$_url);
 		$_url = str_replace("{period}",$period,$_url);
 		$_url = str_replace("{fields}",implode(",",$fields),$_url);
 		
@@ -148,7 +135,7 @@ function fetchForecast( $auth, $mysql_db, $table, $config, $url, $location, $fro
 
 		$_url = str_replace("{to}",urlencode($to),$_url);
 
-		$data = fetch($_url,$auth);
+		$data = fetch($_url,$token);
 		
 		if( !$data )
 		{
@@ -225,30 +212,43 @@ function fetchForecast( $auth, $mysql_db, $table, $config, $url, $location, $fro
             $update_values[] = $sql_setter;
         }
         
-        $sql = "INSERT INTO `" . $table . "` SET " . implode( ",", $insert_values ) . " ON DUPLICATE KEY UPDATE " . implode( ",", $update_values );
-
-        $mysql_db->insertWeatcherData($sql);
+        $mysql_db->insertWeatcherData($insert_values,$update_values);
         
         //echo $sql."\n";
     }
 }
 
-function fetch($url,$auth)
+function fetch($url,$token)
 {
 	$c = curl_init();
-	curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-	$headers = array( 'Authorization: Basic ' . $auth );
-	curl_setopt($c, CURLOPT_HTTPHEADER, $headers);
+	
 	curl_setopt($c, CURLOPT_URL, $url );
-	$content = curl_exec($c);
-	curl_close($c);
+    curl_setopt($c, CURLOPT_HTTPAUTH, CURLAUTH_BEARER );
+    curl_setopt($c, CURLOPT_XOAUTH2_BEARER, $token );
+	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($c, CURLOPT_HEADER, true);  
+
+	$response = curl_exec($c);
+	
+	$status = curl_getinfo($c, CURLINFO_RESPONSE_CODE);
+	
+    $header_size = curl_getinfo($c, CURLINFO_HEADER_SIZE);
+    $header = substr($response, 0, $header_size);
+    $content = substr($response, $header_size);
+
+    curl_close($c);
 
 	if( empty( $content ) ) 
 	{
-        throw new Exception( $url . " has no content" );
+        throw new Exception( $url . " request failed with a " . $status . " and no result" );
 	}
 
 	$data = json_decode($content);
+	
+	if( $status != '200' )
+	{
+        throw new Exception( $url . " failed with a " . $status . "\n" . print_r( $data, true ) );
+	}
 	
 	return $data;
 }
@@ -256,25 +256,44 @@ function fetch($url,$auth)
 function getAutorization($url,$auth)
 {
 	$c = curl_init();
-	curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-	#curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS,array('grant_type' => 'client_credentials'));
 	
-	
-	$headers = array( 'Authorization: Basic ' . $auth );
-	curl_setopt($c, CURLOPT_HTTPHEADER, $headers);
 	curl_setopt($c, CURLOPT_URL, $url );
-	$content = curl_exec($c);
-	curl_close($c);
+    //curl_setopt($c, CURLOPT_HTTPHEADER, array( 'Content-Type: application/x-www-form-urlencoded; charset=utf-8' ));
+    curl_setopt($c, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+    curl_setopt($c, CURLOPT_USERPWD, $auth->getUsername() . ":" . $auth->getPassword());
+	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($c, CURLOPT_POST, true);
+	curl_setopt($c, CURLOPT_POSTFIELDS, 'grant_type=client_credentials');
+    curl_setopt($c, CURLOPT_HEADER, true);  
 
+	//curl_setopt($c, CURLINFO_HEADER_OUT, true);
+	
+	$response = curl_exec($c);
+	
+	$status = curl_getinfo($c, CURLINFO_RESPONSE_CODE);
+	
+    $header_size = curl_getinfo($c, CURLINFO_HEADER_SIZE);
+    $header = substr($response, 0, $header_size);
+    $content = substr($response, $header_size);
+
+    //print_r($status);
+	//print_r($content);
+	
+	//$information = curl_getinfo($c,CURLINFO_HEADER_OUT);
+	//print_r($information);
+	curl_close($c);
+	
 	if( empty( $content ) ) 
 	{
-        throw new Exception( "Authorisation was not successful" );
+        throw new Exception( "Authorisation failed with a " . $status . " and no result" );
 	}
 
 	$data = json_decode($content);
 	
-	print_r($data);
-	
-	return $data;
+	if( $status != '200' || !isset( $data->{'access_token'} ) )
+	{
+        throw new Exception( "Authorisation failed with a " . $status . "\n" . print_r( $data, true ) );
+	}
+
+	return $data->{'access_token'};
 }

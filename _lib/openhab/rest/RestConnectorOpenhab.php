@@ -79,4 +79,15 @@ class RestConnectorOpenhab
         
         return $chartEntries;
     }
+    
+    public function updateItem($item,$value)
+    {
+        $result = Request::makeRequest( "http://" . $this->ip . ":" . $this->port . "/rest/items/" . $item,
+            array( "Accept: application/json", "Content-Type: text/plain" ),
+            $value,
+            200
+        );
+        
+        return $result;
+    }
 }
