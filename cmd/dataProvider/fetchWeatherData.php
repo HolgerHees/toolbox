@@ -223,11 +223,14 @@ function fetch($url,$token)
 	$c = curl_init();
 	
 	curl_setopt($c, CURLOPT_URL, $url );
-    curl_setopt($c, CURLOPT_HTTPAUTH, CURLAUTH_BEARER );
-    curl_setopt($c, CURLOPT_XOAUTH2_BEARER, $token );
+	curl_setopt($c, CURLOPT_HTTPHEADER, array( "Authorization: Bearer " . $token ));
+    //curl_setopt($c, CURLOPT_HTTPAUTH, CURLAUTH_BEARER );
+    //curl_setopt($c, CURLOPT_XOAUTH2_BEARER, $token );
 	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($c, CURLOPT_HEADER, true);  
 
+    //curl_setopt($c, CURLINFO_HEADER_OUT, true);
+    
 	$response = curl_exec($c);
 	
 	$status = curl_getinfo($c, CURLINFO_RESPONSE_CODE);
@@ -235,6 +238,9 @@ function fetch($url,$token)
     $header_size = curl_getinfo($c, CURLINFO_HEADER_SIZE);
     $header = substr($response, 0, $header_size);
     $content = substr($response, $header_size);
+
+    //$information = curl_getinfo($c,CURLINFO_HEADER_OUT);
+	//print_r($information);
 
     curl_close($c);
 
