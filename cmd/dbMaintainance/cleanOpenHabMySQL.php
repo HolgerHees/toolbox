@@ -19,14 +19,17 @@ $allowed_items = array(
     "Door_FF_Floor"
 );
 
+$chart_group = "PersistentChart";
 
-$chartEntries = $rest->getItemGroups();
+$item_groups = $rest->getItemGroups();
+
+//print_r($item_groups);
 
 $itemMap = $mysql_db->selectItemMap( "items" );
 
 foreach( $itemMap as $itemName => $itemTable )
 {
-    if( !isset( $chartEntries[$itemName] ) )
+    if( !isset( $item_groups[$itemName] ) )
     {
         Logger::log( Logger::LEVEL_INFO, $itemName . " (" . $itemTable . ") does not exists in openhab anymore" );
         //$mysql_db->dropItemTable($itemTable,$itemName);
@@ -36,7 +39,7 @@ foreach( $itemMap as $itemName => $itemTable )
     $dbEntry = $mysql_db->selectItemLastEntry( $itemTable );
 
     if(
-        empty( array_intersect( $allowed_groups, $chartEntries[$itemName] ) )
+        empty( array_intersect( $allowed_groups, $item_groups[$itemName] ) )
         and
         !in_array( $itemName, $allowed_items )
     )
@@ -51,7 +54,7 @@ $tables = $influx_db->getTables();
 
 foreach( $tables as $table )
 {
-    if( !isset( $chartEntries[$table] ) )
+    if( !isset( $item_groups[$table] ) and !in_array( $chart_group, $item_groups[$table] ) )
     {
         Logger::log( Logger::LEVEL_INFO, $table . " should not exists in influxdb anymore" );
         //$influx_db->dropTable( $table );
