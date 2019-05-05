@@ -6,16 +6,14 @@ Logger::init( "import" );
 $dryRun = false;
 $detailedLog = false;
 $allowedItems = array(
-    //"Rain_Garden_Current_Daily",
-    "Electricity_Current_Daily_Consumption"
-    //"Electricity_Current_Consumption"
+    //"Rain_Garden_Current_Daily"
 );
 $specialItems = array(
     "Gas_Current_Daily_Consumption" => new IntervalConfig( "Gas_Current_Count", "daily", "0 */5 * * * ?", 20 ),
     "Gas_Current_Consumption" => new IntervalConfig("Gas_Current_Count", "interval", "0 */5 * * * ?", 0.2, 300, 615, 900, 2 ),
 
-    "Electricity_Current_Daily_Consumption" => new IntervalConfig("Electricity_Meter", "daily", "15 */5 * * * ?", 50 ),
-    "Electricity_Current_Consumption" => new IntervalConfig("Electricity_Meter", "interval", "15 */5 * * * ?", 20000, 300, 360, 900, 2 ),
+    //"Electricity_Current_Daily_Consumption" => new IntervalConfig("Electricity_Meter", "daily", "15 */5 * * * ?", 50 ),
+    //"Electricity_Current_Consumption" => new IntervalConfig("Electricity_Meter", "interval", "15 */5 * * * ?", 20000, 300, 360, 900, 2 ),
 
     "Wind_Garden_Current" => new IntervalConfig("Wind_Garden_Converted", "interval", "0 */15 * * * ?", 150, "MAX", 900, 900, 99 ),
     "Rain_Garden_Current" => new IntervalConfig("Rain_Garden_Counter", "interval", "0 0 * * * ?", 30, "DIFF", 3600, 3600, 99 ),
