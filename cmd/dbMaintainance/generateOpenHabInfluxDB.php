@@ -6,7 +6,9 @@ Logger::init( "import" );
 $dryRun = false;
 $detailedLog = false;
 $allowedItems = array(
-    //"Rain_Garden_Current_Daily"
+    //"Electricity_Current_Daily_Consumption",
+    "Electricity_Current_Consumption",
+    //"Electricity_Current_Daily_Demand",
 );
 $specialItems = array(
     "Gas_Current_Daily_Consumption" => new IntervalConfig( "Gas_Current_Count", "daily", "0 */5 * * * ?", 20 ),

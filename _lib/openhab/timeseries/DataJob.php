@@ -68,4 +68,76 @@ class DataJob
             }
         }
     }
+    
+    public function generateValues( $allowedGroups, $specialItems )
+    {
+        $itemMap = $this->mysql_db->selectItemMap();
+
+        $result = Request::makeRequest( "http://192.168.0.50:8080/rest/items?recursive=false",
+            array( "Accept: application/json" ),
+            null,
+            200
+        );
+
+        $chartEntries = $this->rest->getItems( $this->allowedItems, $allowedGroups );
+
+        foreach( $chartEntries as $entry )
+        {
+            echo $entry;
+            
+            if( empty( $itemMap[$entry] ) || !isset( $specialItems[$entry] ) )
+            {
+                Logger::log( Logger::LEVEL_WARNING, "SKIP " . $entry . ". No Data found" );
+                continue;
+            }
+
+            $entries = $this->calculator->generateValues( $entry, $specialItems[$entry], $itemMap );
+
+            $data = $this->calculator->fillHourlyData( $entry, $entries );
+            
+            $start = count($data);
+            
+            $maxTime = new DateTime( $entry == "Electricity_Current_Daily_Demand" ? "2019-05-08 08:03:00" : "2019-05-06 08:06:00" );
+            $maxTime = $maxTime->getTimestamp();
+            
+            $this->mysql_db->deleteItemData( $itemMap[$entry], $maxTime );
+
+            $current_index = 0;
+            $current_value = 0;
+            while( $current_index < count($data) )
+            {
+              $value = $data[$current_index];
+              
+              //echo $value[1] . " " . $maxTime . "\n";
+              
+              if( $value[1] > $maxTime )
+              {
+                  array_splice($data,$current_index);
+                  break;
+              }
+              
+              if( $value[0] != $current_value )
+              {
+                  $current_value = $value[0];
+                  $current_index++;
+              }
+              else
+              {
+                  array_splice($data,$current_index,1);
+              }
+            }
+            
+            echo $entry . " from " . $start . " to " . count($data) . "\n";
+            
+            $this->mysql_db->insertItemData( $itemMap[$entry], $data );
+            
+            //exit;
+
+            //break;
+            //if( !$this->dryRun )
+            //{
+            //    $this->influx_db->insertItemData( $entry, $data );
+            //}
+        }
+    }
 }

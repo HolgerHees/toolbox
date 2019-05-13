@@ -97,6 +97,27 @@ class DBConnectorOpenhab extends DBConnector
         return null;
     }
     
+    public function insertItemData( $table, $insert_values )
+    {
+        foreach( array_chunk( $insert_values, 1000 ) as $_values )
+        {
+            $rows = array();
+            foreach( $_values as $_value )
+            {
+                $rows[] = "(FROM_UNIXTIME(" . $_value[1] . "),'" . $_value[0] . "')"; 
+            }
+            
+            $sql = "INSERT INTO " . $table . " (`time`, `value`) VALUES " . implode( ",", $rows );
+            $this->query( $sql );
+        }
+    }
+
+    public function deleteItemData( $table, $refTime )
+    {
+        $sql = "DELETE FROM " . $table . " WHERE `time` < FROM_UNIXTIME(" . $refTime . ")";
+        $this->query( $sql );
+    }
+
     public function insertWeatcherData( $insert_values, $update_values )
     {
         $sql = "INSERT INTO weather_forecast SET " . implode( ",", $insert_values ) . " ON DUPLICATE KEY UPDATE " . implode( ",", $update_values );
