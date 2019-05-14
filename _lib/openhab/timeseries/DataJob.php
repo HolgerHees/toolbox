@@ -100,8 +100,11 @@ class DataJob
             $maxTime = new DateTime( $entry == "Electricity_Current_Daily_Demand" ? "2019-05-08 08:03:00" : "2019-05-06 08:06:00" );
             $maxTime = $maxTime->getTimestamp();
             
-            $this->mysql_db->deleteItemData( $itemMap[$entry], $maxTime );
-
+            if( !$this->dryRun )
+            {
+                $this->mysql_db->deleteItemData( $itemMap[$entry], $maxTime );
+            }
+            
             $current_index = 0;
             $current_value = 0;
             while( $current_index < count($data) )
@@ -129,15 +132,10 @@ class DataJob
             
             echo $entry . " from " . $start . " to " . count($data) . "\n";
             
-            $this->mysql_db->insertItemData( $itemMap[$entry], $data );
-            
-            //exit;
-
-            //break;
-            //if( !$this->dryRun )
-            //{
-            //    $this->influx_db->insertItemData( $entry, $data );
-            //}
+            if( !$this->dryRun )
+            {
+                $this->mysql_db->insertItemData( $itemMap[$entry], $data );
+            }
         }
     }
 }

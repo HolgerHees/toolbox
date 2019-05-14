@@ -5,12 +5,12 @@ Logger::init( "import" );
 
 exit;
 
-$dryRun = false;
+$dryRun = true;
 $detailedLog = false;
 $allowedItems = array(
-    "Electricity_Current_Daily_Consumption",  // 2019-05-06 08:06:35.514    174
+    #"Electricity_Current_Daily_Consumption",  // 2019-05-06 08:06:35.514    174
     "Electricity_Current_Consumption",        // 2019-05-06 08:06:41.924    175
-    "Electricity_Current_Daily_Demand",       // 2019-05-08 08:03:59.228      179
+    #"Electricity_Current_Daily_Demand",       // 2019-05-08 08:03:59.228      179
 );
 $specialItems = array(
     "Electricity_Current_Daily_Consumption" => new IntervalConfig("Electricity_Meter_Demand", "daily", "15 */5 * * * ?", 50 ),
