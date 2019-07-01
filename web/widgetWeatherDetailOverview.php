@@ -53,9 +53,14 @@ $current_value['to'] = ( clone $hourlyData['datetime'] )->add(new DateInterval('
 $todayValues[] = $current_value;
 
 //echo print_r($dayList,true);
+//echo print_r($todayValues,true);
 
 /**** WEEKLIST ****/
-$weekList = $mysql_db->getWeatherDataWeekList();
+$weekFrom = new DateTime();
+$weekFrom->setTime(2,0,0);
+
+$weekList = $mysql_db->getWeatherDataWeekList($weekFrom);
+//echo print_r($weekList,true);
 
 list( $minTemperatureWeekly, $maxTemperatureWeekly, $maxWindSpeedWeekly, $sumSunshineWeekly, $sumRainWeekly ) = Weather::calculateSummary( $weekList );
 
@@ -119,7 +124,7 @@ foreach( $todayValues as $hourlyData ){
                     <div class="main"><?php echo $hourlyData['airTemperatureInCelsius']; ?></div><div class="sub">°C</div></div>
                 <div class="info">
                     <div class="sunshineDuration"><div class="sun"><?php echo Weather::getSVG('sun', 'self_sun_grayscaled') . "</div><div>" . Weather::formatDuration( $hourlyData['sunshineDurationInMinutesSum'] ); ?></div></div>
-                    <div class="precipitationProbability"><?php echo Weather::getSVG('rain','self_rain_grayscaled') . " " . $hourlyData['precipitationProbabilityInPercent']; ?> %</div>
+                    <div class="precipitationProbability"><div><?php echo Weather::getSVG('rain','self_rain_grayscaled') . "</div><div>" . $hourlyData['precipitationProbabilityInPercent']; ?> %</div></div>
                     <div class="precipitationAmount"><?php echo $hourlyData['precipitationAmountInMillimeterSum']; ?> mm</div>
                 </div>
                 <div class="wind">

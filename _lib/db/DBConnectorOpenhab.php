@@ -159,9 +159,9 @@ class DBConnectorOpenhab extends DBConnector
         return null;
     }
     
-    public function getWeatherDataWeekList()
+    public function getWeatherDataWeekList($from)
     {
-        $result = $this->query( "SELECT * FROM weather_forecast WHERE `datetime` >= CURDATE() AND `datetime` < DATE_ADD(CURDATE(), INTERVAL 8 DAY)  ORDER BY `datetime`" );
+        $result = $this->query( "SELECT * FROM weather_forecast WHERE `datetime` >= '".$from->format("Y-m-d H:i:s")."' AND `datetime` < DATE_ADD(CURDATE(), INTERVAL 8 DAY)  ORDER BY `datetime`" );
 
         if( $result->num_rows > 0 )
         {
