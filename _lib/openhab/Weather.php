@@ -172,7 +172,7 @@ class Weather
         
         $typeLeftOffset = isset( Weather::$sunConfig['typeIconOffsetLeft'][$icon] ) ? Weather::$sunConfig['typeIconOffsetLeft'][$icon] : Weather::$sunConfig['typeIconOffsetLeft'][ ( $isNight ? 'night' : 'day' ) . '_default'];
         
-        if( $precipitationProbabilityInPercent > 20 && $precipitationAmountInMillimeter > 0 )
+        if( $precipitationProbabilityInPercent > 10 && $precipitationAmountInMillimeter > 0 )
         {
             //error_log( $timerange . " " . $precipitationAmountInMillimeter );
             

@@ -5,15 +5,15 @@ $mysql_db = Setup::getOpenHabMysql();
 
 $from = new DateTime();
 $hour = $from->format("H");
-if( $hour >= 22 ) $from->setTime( 22, 0, 0 );
-else if( $hour >= 17 ) $from->setTime( 17, 0, 0 );
-else if( $hour >= 12 ) $from->setTime( 12, 0, 0 );
-else if( $hour >= 7 ) $from->setTime( 7, 0, 0 );
-else if( $hour >= 2 ) $from->setTime( 2, 0, 0 );
+if( $hour >= 21 ) $from->setTime( 21, 0, 0 );
+else if( $hour >= 16 ) $from->setTime( 16, 0, 0 );
+else if( $hour >= 11 ) $from->setTime( 11, 0, 0 );
+else if( $hour >= 6 ) $from->setTime( 6, 0, 0 );
+else if( $hour >= 1 ) $from->setTime( 1, 0, 0 );
 else 
 {
 	$from->sub(new DateInterval('PT24H'));
-	$from->setTime( 22, 0, 0 );
+	$from->setTime( 21, 0, 0 );
 }
 
 $to = clone $from;
@@ -33,11 +33,11 @@ list( $minTemperature, $maxTemperature, $maxWindSpeed, $sumSunshine, $sumRain ) 
 
 /******* OVERVIEW ************/
 $blockConfigs = array(
-	'22' => array( 'title' => "Nachts", 'class' => 'night' ),
-	'17' => array( 'title' => "Abends", 'class' => 'evening' ),
-	'12' => array( 'title' => "Mittags", 'class' => 'lunch' ),
-	'07' => array( 'title' => "Früh", 'class' => 'morning' ),
-	'02' => array( 'title' => "Nachts", 'class' => 'night' ),
+	'21' => array( 'title' => "Nachts", 'class' => 'night' ),
+	'16' => array( 'title' => "Abends", 'class' => 'evening' ),
+	'11' => array( 'title' => "Mittags", 'class' => 'lunch' ),
+	'06' => array( 'title' => "Früh", 'class' => 'morning' ),
+	'01' => array( 'title' => "Nachts", 'class' => 'night' ),
 );
 
 //echo print_r($list,true);

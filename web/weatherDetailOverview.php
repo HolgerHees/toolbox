@@ -40,8 +40,54 @@
   {
     width: 60px !important;
     height: 60px !important;
+    min-width: 60px;
     text-align: center;
   }
+  
+  .mvWidget .weatherForecast .raindrop_background_1, 
+  .mvWidget .weatherForecast .raindrop_background_2, 
+  .mvWidget .weatherForecast .raindrop_background_3, 
+  .mvWidget .weatherForecast .raindrop_background_4,
+  .mvWidget .weatherForecast .snowflake_background_1, 
+  .mvWidget .weatherForecast .snowflake_background_2, 
+  .mvWidget .weatherForecast .snowflake_background_3, 
+  .mvWidget .weatherForecast .snowflake_background_4 {
+      height: 7px;
+      margin-top: 10px;
+      margin-bottom: 11px;
+  }
+  .mvWidget .weatherForecast .raindrop_background_1 {
+      width: 10px;
+  }
+  .mvWidget .weatherForecast .snowflake_background_1 {
+      width: 12px;
+  }
+  .mvWidget .weatherForecast .raindrop_background_2 {
+      width: 17px;
+  } 
+  .mvWidget .weatherForecast .snowflake_background_2 {
+      width: 18px;
+  } 
+  .mvWidget .weatherForecast .raindrop_background_3 {
+      width: 22px;
+  } 
+  .mvWidget .weatherForecast .snowflake_background_3,
+  .mvWidget .weatherForecast .snowflake_background_4 {
+      width: 24px;
+  } 
+  .mvWidget .weatherForecast .raindrop_background_4 {
+      width: 22px;
+  }
+  .mvWidget .weatherForecast svg.raindrop,
+  .mvWidget .weatherForecast svg.snowflake,
+  .mvWidget .weatherForecast svg.thunder {
+      width: 29px;
+      height: 29px;
+  }
+
+  
+  
+  
   .mvWidget .weatherDetailForecast .hour > div > .wind .compass, 
   .mvWidget .weatherDetailForecast .hour > div > .wind svg {
     width: 24px;

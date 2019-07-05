@@ -15,18 +15,20 @@ $to->setTime(23,59,59);
 $dayList = $mysql_db->getWeatherDataList($from, $to);
 list( $minTemperature, $maxTemperature, $maxWindSpeed, $sumSunshine, $sumRain ) = Weather::calculateSummary( $dayList );
 
+//echo Weather::formatDay($activeDay);
+
 /**** DAYLIST ****/
 $from = clone $activeDay;
 if( $isToday )
 {
-	$from->setTime(2,0,0);
+	$from->setTime(0,0,0);
 }
 else{
-	$from->setTime(23,0,0);
-	$from->sub(new DateInterval('PT24H'));
+	$from->setTime(0,0,0);
+	//$from->sub(new DateInterval('PT24H'));
 }
-$to = $activeDay;
-$to->setTime(23,00,00);
+$to = clone $activeDay;
+$to->setTime(24,00,00);
 
 $dayList = $mysql_db->getWeatherDataList($from, $to);
 
@@ -57,7 +59,7 @@ $todayValues[] = $current_value;
 
 /**** WEEKLIST ****/
 $weekFrom = new DateTime();
-$weekFrom->setTime(2,0,0);
+$weekFrom->setTime(0,0,0);
 
 $weekList = $mysql_db->getWeatherDataWeekList($weekFrom);
 //echo print_r($weekList,true);
