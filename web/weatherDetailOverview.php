@@ -15,7 +15,14 @@
 <script>
     var isPhone = ( navigator.userAgent.indexOf("Android") != -1 && navigator.userAgent.indexOf("Mobile") != -1 );
     var theme = isPhone || top.document.location.pathname.includes("habpanel") ? 'dark' : 'light';
-    document.querySelector("body").classList.add(theme);
+    document.querySelector("html").classList.add(theme);
+    
+    if( parent.location.pathname.indexOf("basicui")===-1 )
+    {
+        document.querySelector("body").style.maxWidth = "1024px";
+        document.querySelector("body").style.margin = "10px auto";
+
+    }
 </script>
 <div id="openButton">Woche</div>
 <div class="mvWidget">
