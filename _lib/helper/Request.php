@@ -2,10 +2,17 @@
 
 class Request
 {
-    public static function makeRequest( $url, $headers, $postData, $expectedCode )
+    public static function makeRequest( $url, $headers, $postData, $expectedCode, $timeout = -1 )
     {
         // DROP OLD DATA
         $ch = curl_init();
+        
+        if( $timeout >= 0 )
+        {
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,$timeout); 
+            curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        }
+        
         curl_setopt( $ch, CURLOPT_URL, $url );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
         
