@@ -203,7 +203,7 @@ class Weather
 
 			$typeTopOffset = isset( Weather::$sunConfig['typeIconOffsetTop'][$type][$icon] ) ? Weather::$sunConfig['typeIconOffsetTop'][$type][$icon] : Weather::$sunConfig['typeIconOffsetTop'][$type]['default'];
 
-            $svg .= '<div class="'.$type.'_background_' . $amount . '" style="left:'.$typeLeftOffset.'%;top:'.$typeTopOffset.'%"></div>';
+            $svg .= '<div class="'.$type.'_background_' . $amount . ' raindrop_snowflake_background" style="left:'.$typeLeftOffset.'%;top:'.$typeTopOffset.'%"></div>';
 			$svg .= '<svg style="left:'.$typeLeftOffset.'%;top:'.$typeTopOffset.'%" class="'.$type.'" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64">
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/static/theme/svg/icons.svg#self_'.$type.$amount.'_grayscaled" />
                  </svg>';
