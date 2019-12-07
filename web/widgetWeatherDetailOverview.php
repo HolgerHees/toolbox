@@ -13,80 +13,88 @@ $from->setTime(0,0,0);
 $to = clone $from;
 $to->setTime(23,59,59);
 $dayList = $mysql_db->getWeatherDataList($from, $to);
-list( $minTemperature, $maxTemperature, $maxWindSpeed, $sumSunshine, $sumRain ) = Weather::calculateSummary( $dayList );
 
-//echo Weather::formatDay($activeDay);
-
-/**** DAYLIST ****/
-$from = clone $activeDay;
-if( $isToday )
-{
-	$from->setTime(0,0,0);
-}
-else{
-	$from->setTime(0,0,0);
-	//$from->sub(new DateInterval('PT24H'));
-}
-$to = clone $activeDay;
-$to->setTime(24,00,00);
-
-$dayList = $mysql_db->getWeatherDataList($from, $to);
-
-$todayValues = array();
-$current_value = Weather::initBlockData( reset( $dayList )['datetime']);
-$index = 0;
-
-foreach( $dayList as $hourlyData  ){
-	//echo ( $index ) . "<br>";
-    
-    if( $index > 0 && $index % 3 == 0 )
+if( $dayList )
     {
-        $current_value['to'] = $hourlyData['datetime'];
-        $todayValues[] = $current_value;
-        $current_value = Weather::initBlockData($hourlyData['datetime']);
-        //echo $hourlyData['datetime']."<br>";
+    list( $minTemperature, $maxTemperature, $maxWindSpeed, $sumSunshine, $sumRain ) = Weather::calculateSummary( $dayList );
+
+    //echo Weather::formatDay($activeDay);
+
+    /**** DAYLIST ****/
+    $from = clone $activeDay;
+    if( $isToday )
+    {
+        $from->setTime(0,0,0);
     }
-    
-    Weather::applyBlockData($current_value,$hourlyData);
+    else{
+        $from->setTime(0,0,0);
+        //$from->sub(new DateInterval('PT24H'));
+    }
+    $to = clone $activeDay;
+    $to->setTime(24,00,00);
 
-    $index++;
-}
-$current_value['to'] = ( clone $hourlyData['datetime'] )->add(new DateInterval('PT1H'));;
-$todayValues[] = $current_value;
+    $dayList = $mysql_db->getWeatherDataList($from, $to);
 
-//echo print_r($dayList,true);
-//echo print_r($todayValues,true);
+    $todayValues = array();
+    $current_value = Weather::initBlockData( reset( $dayList )['datetime']);
+    $index = 0;
 
-/**** WEEKLIST ****/
-$weekFrom = new DateTime();
-$weekFrom->setTime(0,0,0);
-
-$weekList = $mysql_db->getWeatherDataWeekList($weekFrom);
-//echo print_r($weekList,true);
-
-list( $minTemperatureWeekly, $maxTemperatureWeekly, $maxWindSpeedWeekly, $sumSunshineWeekly, $sumRainWeekly ) = Weather::calculateSummary( $weekList );
-
-$weekValues = array();
-$weekList[0]['datetime']->setTime(10,0,0);
-$current_value = Weather::initBlockData( $weekList[0]['datetime'] );
-$index = 1;
-foreach( $weekList as $hourlyData )
-{
-    $hourlyData['datetime']->setTime(10,0,0);
-
-    //echo $hourlyData['datetime']." ".$current_value['from'] . "\n\n";
-    if( $hourlyData['datetime'] != $current_value['from'] )
-    {
-        $current_value['to'] = $current_value['from'];
-        $weekValues[] = $current_value;
-        $current_value = Weather::initBlockData($hourlyData['datetime']);
+    foreach( $dayList as $hourlyData  ){
+        //echo ( $index ) . "<br>";
         
-        //echo $hourlyData['datetime']."<br>";
-    }
-    
-    Weather::applyBlockData($current_value,$hourlyData);
+        if( $index > 0 && $index % 3 == 0 )
+        {
+            $current_value['to'] = $hourlyData['datetime'];
+            $todayValues[] = $current_value;
+            $current_value = Weather::initBlockData($hourlyData['datetime']);
+            //echo $hourlyData['datetime']."<br>";
+        }
+        
+        Weather::applyBlockData($current_value,$hourlyData);
 
-    $index++;
+        $index++;
+    }
+    $current_value['to'] = ( clone $hourlyData['datetime'] )->add(new DateInterval('PT1H'));;
+    $todayValues[] = $current_value;
+
+    //echo print_r($dayList,true);
+    //echo print_r($todayValues,true);
+
+    /**** WEEKLIST ****/
+    $weekFrom = new DateTime();
+    $weekFrom->setTime(0,0,0);
+
+    $weekList = $mysql_db->getWeatherDataWeekList($weekFrom);
+    //echo print_r($weekList,true);
+
+    list( $minTemperatureWeekly, $maxTemperatureWeekly, $maxWindSpeedWeekly, $sumSunshineWeekly, $sumRainWeekly ) = Weather::calculateSummary( $weekList );
+
+    $weekValues = array();
+    $weekList[0]['datetime']->setTime(10,0,0);
+    $current_value = Weather::initBlockData( $weekList[0]['datetime'] );
+    $index = 1;
+    foreach( $weekList as $hourlyData )
+    {
+        $hourlyData['datetime']->setTime(10,0,0);
+
+        //echo $hourlyData['datetime']." ".$current_value['from'] . "\n\n";
+        if( $hourlyData['datetime'] != $current_value['from'] )
+        {
+            $current_value['to'] = $current_value['from'];
+            $weekValues[] = $current_value;
+            $current_value = Weather::initBlockData($hourlyData['datetime']);
+            
+            //echo $hourlyData['datetime']."<br>";
+        }
+        
+        Weather::applyBlockData($current_value,$hourlyData);
+
+        $index++;
+    }
+}
+else
+{
+    $hourlyData = [];
 }
 //$current_value['to'] = ( clone $hourlyData['datetime'] )->add(new DateInterval('PT1H'));;
 //$weekValues[] = $current_value;
@@ -109,13 +117,21 @@ foreach( $weekList as $hourlyData )
             <div class="cell"><div class="txt">Dauer:</div><div class="icon sun"><?php echo Weather::getSVG('sun', 'self_sun_grayscaled') . "</div><div class=\"value\">" . Weather::formatDuration( $sumSunshine ); ?></div></div>
 		</div>
 <?php 
-$i=0;
-foreach( $todayValues as $hourlyData ){  
-    #$hourlyData['effectiveCloudCoverInOcta'] = 3;//$i;
-    #$hourlyData['precipitationProbabilityInPercent'] = 40;
-    #$hourlyData['precipitationAmountInMillimeter'] = $i * 0.6;
-    #$hourlyData['thunderstormProbabilityInPercent'] = 40;
-    $i++;
+    if( !$hourlyData )
+    {
+?>
+		<div class="hour">Keine Vorhersagedaten vorhanden</div>
+<?php 
+    }
+    else
+    {
+        $i=0;
+        foreach( $todayValues as $hourlyData ){  
+            #$hourlyData['effectiveCloudCoverInOcta'] = 3;//$i;
+            #$hourlyData['precipitationProbabilityInPercent'] = 40;
+            #$hourlyData['precipitationAmountInMillimeter'] = $i * 0.6;
+            #$hourlyData['thunderstormProbabilityInPercent'] = 40;
+            $i++;
 ?>
 		<div class="hour">
 			<div>
@@ -137,7 +153,8 @@ foreach( $todayValues as $hourlyData ){
                     <div><?php echo $hourlyData['windSpeedInKilometerPerHour']; ?> km/h</div></div>
             </div>
 		</div>
-<?php } ?>
+<?php   }
+    }?>
     </div>
 	<div class="week">
 		<div class="title">
@@ -152,9 +169,19 @@ foreach( $todayValues as $hourlyData ){
 			<div class="bullet">•</div>
             <div class="cell"><div class="txt">Dauer:</div><div class="icon sun"><?php echo Weather::getSVG('sun', 'self_sun_grayscaled') . "</div><div class=\"value\">" . Weather::formatDuration( $sumSunshineWeekly ); ?></div></div>
 		</div>
-<?php foreach( $weekValues as $hourlyData ){ 
-    $clickUrl = $_SERVER['SCRIPT_URL'] . '?date=' . $hourlyData['from']->format("Y-m-d");
-    //$hourlyData['effectiveCloudCoverInOcta'] = array_search($hourlyData,$weekValues) * 1.2;
+<?php 
+    if( !$hourlyData )
+    {
+?>
+		<div class="hour">Keine Vorhersagedaten vorhanden</div>
+<?php 
+    }
+    else
+    {
+        foreach( $weekValues as $hourlyData )
+        { 
+            $clickUrl = $_SERVER['SCRIPT_URL'] . '?date=' . $hourlyData['from']->format("Y-m-d");
+            //$hourlyData['effectiveCloudCoverInOcta'] = array_search($hourlyData,$weekValues) * 1.2;
 ?>
 		<div class="hour">
 			<div class="mvClickable<?php if( $activeDay->format("Y-m-d") == $hourlyData['from']->format("Y-m-d") ) echo " active"; ?>" mv-url="<?php echo $clickUrl;?>">
@@ -178,6 +205,7 @@ foreach( $todayValues as $hourlyData ){
                 <div class="status"></div>
             </div>
 		</div>
-<?php } ?>
+<?php   }
+    }?>
 	</div>
 </div>
