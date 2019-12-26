@@ -7,7 +7,7 @@ $dryRun = false;
 $detailedLog = false;
 $allowedItems = array(
     //"Electricity_Current_Daily_Consumption",
-    "Electricity_Current_Consumption",
+    //"Electricity_Current_Consumption",
     //"Electricity_Current_Daily_Demand",
 );
 $specialItems = array(
