@@ -14,10 +14,16 @@
 <body>
 <script>
     var isPhone = ( navigator.userAgent.indexOf("Android") != -1 && navigator.userAgent.indexOf("Mobile") != -1 );
-    var theme = isPhone || top.document.location.pathname.includes("habpanel") ? 'dark' : 'light';
+    var theme = isPhone ? 'dark' : 'light';
+    var basicui = false;
+    try{
+        if( parent.document.location.pathname.includes("habpanel") ) theme = 'dark';
+        if( parent.location.pathname.indexOf("basicui")!==-1 ) basicui = true;
+    }
+    catch(e){}
     document.querySelector("html").classList.add(theme);
     
-    if( parent.location.pathname.indexOf("basicui")===-1 )
+    if( !basicui )
     {
         document.querySelector("body").style.maxWidth = "1024px";
         document.querySelector("body").style.margin = "10px auto";
