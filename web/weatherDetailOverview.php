@@ -13,8 +13,25 @@
 </head>
 <body>
 <script>
-    var isPhone = ( navigator.userAgent.indexOf("Android") != -1 && navigator.userAgent.indexOf("Mobile") != -1 );
-    var theme = isPhone ? 'dark' : 'light';
+    var theme = "";
+    if( document.cookie.indexOf("theme=") != -1 )
+    {
+        var cookies = document.cookie.split(";");
+        for(var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].split("=");
+            if( cookie[0] == "theme" )
+            {
+                theme = cookie[1];
+                break;
+            }
+        }
+    }
+    else
+    {
+        var isPhone = ( navigator.userAgent.indexOf("Android") != -1 && navigator.userAgent.indexOf("Mobile") != -1 );
+        theme = isPhone ? 'dark' : 'light';
+    }
+    
     var basicui = false;
     try{
         if( parent.document.location.pathname.includes("habpanel") ) theme = 'dark';
