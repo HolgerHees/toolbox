@@ -29,22 +29,38 @@
     else
     {
         var isPhone = ( navigator.userAgent.indexOf("Android") != -1 && navigator.userAgent.indexOf("Mobile") != -1 );
-        theme = isPhone ? 'dark' : 'light';
+        theme = isPhone ? 'black' : 'light';
     }
     
     var basicui = false;
     try{
-        if( parent.document.location.pathname.includes("habpanel") ) theme = 'dark';
-        if( parent.location.pathname.indexOf("basicui")!==-1 ) basicui = true;
+        var current = window;
+        while( current.parent )
+        {
+            if( current.location.pathname.includes("habpanel") )
+            {   
+                theme = 'black';
+                break;
+            }
+            current = current.parent;
+        }
+        if( parent.location.pathname.indexOf("basicui")!==-1 )
+        {   
+            basicui = true;
+        }
     }
     catch(e){}
+
     document.querySelector("html").classList.add(theme);
     
     if( !basicui )
     {
-        document.querySelector("body").style.maxWidth = "1024px";
-        document.querySelector("body").style.margin = "10px auto";
-
+        document.body.style.maxWidth = "1024px";
+        document.body.style.margin = "10px auto";
+    }
+    else
+    {
+        document.body.classList.add("basicui");
     }
 </script>
 <div id="openButton">Woche</div>
