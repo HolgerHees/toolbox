@@ -54,7 +54,7 @@ $tables = $influx_db->getTables();
 
 foreach( $tables as $table )
 {
-    if( !isset( $item_groups[$table] ) and !in_array( $chart_group, $item_groups[$table] ) )
+    if( !isset( $item_groups[$table] ) or !in_array( $chart_group, $item_groups[$table] ) )
     {
         Logger::log( Logger::LEVEL_INFO, $table . " should not exists in influxdb anymore" );
         //$influx_db->dropTable( $table );
