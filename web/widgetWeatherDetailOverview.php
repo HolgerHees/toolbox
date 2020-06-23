@@ -108,7 +108,7 @@ else
             <?php /*echo time();*/ echo Weather::formatDay($activeDay); ?>
 		</div>
 		<div class="summary">
-			<div class="cell"><div class="txt">Bereich:</div><div class="icon temperature"><?php echo Weather::getSVG('temperature', 'self_temperature_grayscaled') . "</div><div class=\"value\">" . $minTemperature . " °C - " . $maxTemperature; ?> °C</div></div>
+			<div class="cell"><div class="txt">Bereich:</div><div class="icon temperature"><?php echo Weather::getSVG('temperature', 'self_temperature_grayscaled') . "</div><div class=\"value\">" . $minTemperature . " - " . $maxTemperature; ?> °C</div></div>
 			<div class="bullet">•</div>
 			<div class="cell"><div class="txt">Max.:</div><div class="icon wind"><?php echo Weather::getSVG('wind', 'self_wind_grayscaled') . "</div><div class=\"value\">" . $maxWindSpeed; ?> km/h</div></div>
 			<div class="bullet">•</div>
@@ -161,7 +161,7 @@ else
             Woche
 		</div>
 		<div class="summary">
-			<div class="cell"><div class="txt">Bereich:</div><div class="icon temperature"><?php echo Weather::getSVG('temperature', 'self_temperature_grayscaled') . "</div><div class=\"value\">" . $minTemperatureWeekly . " °C - " . $maxTemperatureWeekly; ?> °C</div></div>
+			<div class="cell"><div class="txt">Bereich:</div><div class="icon temperature"><?php echo Weather::getSVG('temperature', 'self_temperature_grayscaled') . "</div><div class=\"value\">" . $minTemperatureWeekly . " - " . $maxTemperatureWeekly; ?> °C</div></div>
 			<div class="bullet">•</div>
 			<div class="cell"><div class="txt">Max.:</div><div class="icon wind"><?php echo Weather::getSVG('wind', 'self_wind_grayscaled') . "</div><div class=\"value\">" . $maxWindSpeedWeekly; ?> km/h</div></div>
 			<div class="bullet">•</div>
