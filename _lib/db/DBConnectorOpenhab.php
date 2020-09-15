@@ -125,6 +125,13 @@ class DBConnectorOpenhab extends DBConnector
         $this->query( $sql );
     }
     
+    public function updateWeatcherData( $datetime, $update_values )
+    {
+        $sql = "UPDATE weather_forecast SET " . implode( ",", $update_values ) . " WHERE `datetime` = " . $datetime;
+
+        $this->query( $sql );
+    }
+
     public function getWeatherData( $offset )
     {
         $result = $this->query( "SELECT * FROM weather_forecast WHERE `datetime` > DATE_ADD(NOW(), INTERVAL " . ( $offset - 1 ) . " HOUR)  ORDER BY `datetime` ASC LIMIT 1" );

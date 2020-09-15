@@ -33,17 +33,15 @@ $forecast_config = array(
 	
 );
 
-$current_url = 'https://point-observation.weather.mg/search?locatedAt={location}&validPeriod={period}&fields={fields}&validFrom={from}&validUntil={to}';
+$current_url = 'https://point-observation.weather.mg/search?locatedAt={location}&observedPeriod={period}&fields={fields}&observedFrom={from}&observedUntil={to}';
 $current_config = array(
 	'PT0S' => array( 
-        //"airTemperatureInCelsius", 
+        "airTemperatureInCelsius", 
 		"feelsLikeTemperatureInCelsius",
-		//"relativeHumidityInPercent",
-		"windDirectionInDegree" => "Wind_Direction",
-		"effectiveCloudCoverInOcta" => "Cloud_Cover_Current",
-		"precipitationProbabilityInPercent",
-		"temperatureMinInCelsius",
-		"temperatureMaxInCelsius"
+		"relativeHumidityInPercent",
+		"windSpeedInKilometerPerHour",
+		"windDirectionInDegree",
+		"effectiveCloudCoverInOcta"
 	)
 );
 
@@ -68,22 +66,24 @@ date_default_timezone_set('Europe/Berlin');
 
 //2018-04-20T11:00:00.000Z
 $date = new DateTime();
-$from = $date->format('c');
+$now = $date->format('c');
 
-//$diff = new DateInterval('P7D');
 $diff = new DateInterval('PT169H');
-//$diff = new DateInterval('PT24H');
+$date = new DateTime();
 $date->add($diff);
 $to = $date->format('c');
 	
+$diff = new DateInterval('PT1H');
+$date = new DateTime();
+$date->sub($diff);
+$from = $date->format('c');
 //echo $from . " - ".$to . "\n";
-
-//fetchCurrent( $auth, $current_config, $current_url, $location, $from, $to );
 
 $token = getAutorization($autorization_url,$auth);
 if( $token )
 {
-    fetchForecast( $token, $mysql_db, $forecast_config, $forecast_url, $location, $from, $to );
+    fetchCurrent( $token, $mysql_db, $current_config, $current_url, $location, $from, $now );
+    fetchForecast( $token, $mysql_db, $forecast_config, $forecast_url, $location, $now, $to );
     updateOpenhab( $collect_forcasts, $mysql_db, $openhab_rest );
 }
 
@@ -121,6 +121,41 @@ function updateOpenhab( $collect_forcasts, $mysql_db, $openhab_rest )
     }
 }
 
+function fetchCurrent( $token, $mysql_db, $config, $url, $location, $from, $to )
+{
+    $_location = $location->getLongitude() . "," . $location->getLatitude();
+	$entries = array();
+	foreach( $config as $period => $fields )
+	{
+		$_url = $url;
+		$_url = str_replace("{location}",$_location,$_url);
+		$_url = str_replace("{period}",$period,$_url);
+		$_url = str_replace("{fields}",implode(",",$fields),$_url);
+		
+		$_url = str_replace("{from}",urlencode($from),$_url);
+
+		$_url = str_replace("{to}",urlencode($to),$_url);
+
+		$data = fetch($_url,$token);
+          
+		if( !$data ) throw new Exception("unable to parse result from " . $_url );
+		if( !isset($data->{'observations'}) ) throw new Exception("unable to get observations from " . $_url . " " . print_r($data,true) );
+		
+		foreach( $data->{'observations'} as $observation )
+		{
+			$key = $observation->{'observedFrom'};
+		
+            $update_values = array();
+            foreach( $fields as $field )
+            {
+                $update_values[] = "`".$field."`='".$observation->{$field}."'";
+            }
+            
+            $mysql_db->updateWeatcherData("from_unixtime(".strtotime($key).")",$update_values);
+        }
+    }
+}
+
 function fetchForecast( $token, $mysql_db, $config, $url, $location, $from, $to )
 {
     $_location = $location->getLongitude() . "," . $location->getLatitude();
@@ -138,15 +173,8 @@ function fetchForecast( $token, $mysql_db, $config, $url, $location, $from, $to 
 
 		$data = fetch($_url,$token);
 		
-		if( !$data )
-		{
-            throw new Exception("unable to parse result from " . $_url );
-		}
-		
-		if( !isset($data->{'forecasts'}) )
-		{
-			throw new Exception("unable to get forecasts from " . $_url . " " . print_r($data,true) );
-		}
+		if( !$data ) throw new Exception("unable to parse result from " . $_url );
+		if( !isset($data->{'forecasts'}) ) throw new Exception("unable to get forecasts from " . $_url . " " . print_r($data,true) );
 		
 		foreach( $data->{'forecasts'} as $forecast )
 		{
