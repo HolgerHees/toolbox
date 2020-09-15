@@ -6,10 +6,12 @@ $openhab_rest = Setup::getOpenHabRest();
 $location = Setup::getGeoLocation();
 $auth = Setup::getWeatherAuth();
 
+$forecast_url = 'https://point-forecast.weather.mg/search?locatedAt={location}&validPeriod={period}&fields={fields}&validFrom={from}&validUntil={to}';
 $forecast_config = array(
 	'PT0S' => array( 
 		"airTemperatureInCelsius", 
 		"feelsLikeTemperatureInCelsius", 
+        "relativeHumidityInPercent",
 		"windSpeedInKilometerPerHour", 
 		"windDirectionInDegree", 
 		"effectiveCloudCoverInOcta", 
@@ -31,16 +33,17 @@ $forecast_config = array(
 	
 );
 
-$forecast_url = 'https://point-forecast.weather.mg/search?locatedAt={location}&validPeriod={period}&fields={fields}&validFrom={from}&validUntil={to}';
-
+$current_url = 'https://point-observation.weather.mg/search?locatedAt={location}&validPeriod={period}&fields={fields}&validFrom={from}&validUntil={to}';
 $current_config = array(
 	'PT0S' => array( 
-		'feelsLikeTemperatureInCelsius',
-		'windDirectionInDegree' => 'Wind_Direction',
-		'effectiveCloudCoverInOcta' => 'Cloud_Cover_Current',
-		'precipitationProbabilityInPercent',
-		'temperatureMinInCelsius',
-		'temperatureMaxInCelsius'
+        //"airTemperatureInCelsius", 
+		"feelsLikeTemperatureInCelsius",
+		//"relativeHumidityInPercent",
+		"windDirectionInDegree" => "Wind_Direction",
+		"effectiveCloudCoverInOcta" => "Cloud_Cover_Current",
+		"precipitationProbabilityInPercent",
+		"temperatureMinInCelsius",
+		"temperatureMaxInCelsius"
 	)
 );
 
@@ -58,8 +61,6 @@ $collect_forcasts = array(
 		"effectiveCloudCoverInOcta" => 'Cloud_Cover_Forecast8'
 	),
 );
-
-$current_url = 'https://point-observation.weather.mg/search?locatedAt={location}&validPeriod={period}&fields={fields}&validFrom={from}&validUntil={to}';
 
 $autorization_url = "https://auth.weather.mg/oauth/token";
 
@@ -194,7 +195,7 @@ function fetchForecast( $token, $mysql_db, $config, $url, $location, $from, $to 
 	
     foreach( $entries as $values )
     {
-        if( count($values) != 15 )
+        if( count($values) != 16 )
         {
             throw new Exception("no values");
         }

@@ -9,6 +9,11 @@ $allowedItems = array(
     //"Electricity_Current_Daily_Consumption",
     //"Electricity_Current_Consumption",
     //"Electricity_Current_Daily_Demand",
+    "WeatherStation_Rain_Current",
+    "WeatherStation_Rain_Daily",
+    "WeatherStation_Wind_Current",
+    "WeatherStation_Temperature",
+    "WeatherStation_Humidity",
 );
 $specialItems = array(
     "Gas_Current_Daily_Consumption" => new IntervalConfig( "Gas_Current_Count", "daily", "0 */5 * * * ?", 20 ),
@@ -20,6 +25,10 @@ $specialItems = array(
     "Wind_Garden_Current" => new IntervalConfig("Wind_Garden_Converted", "interval", "0 */15 * * * ?", 150, "MAX", 900, 900, 99 ),
     "Rain_Garden_Current" => new IntervalConfig("Rain_Garden_Counter", "interval", "0 0 * * * ?", 30, "DIFF", 3600, 3600, 99 ),
     "Rain_Garden_Current_Daily" => new IntervalConfig("Rain_Garden_Counter", "daily", "0 */5 * * * ?", 100 ),
+
+    "WeatherStation_Wind_Current" => new IntervalConfig("WeatherStation_Wind_Speed", "interval", "0 */15 * * * ?", 150, "MAX", 900, 900, 99 ),
+    "WeatherStation_Rain_Current" => new IntervalConfig("WeatherStation_Rain_Counter", "interval", "0 0 * * * ?", 30, "DIFF", 3600, 3600, 99 ),
+    "WeatherStation_Rain_Daily" => new IntervalConfig("WeatherStation_Rain_Counter", "daily", "0 */5 * * * ?", 100 ),
 
     // Maybe improve interval. Sometimes we messure every minute
     "Heating_Burner_Hours_Current_Daily" => new IntervalConfig("Heating_Burner_Hours", "daily", "15 0 0 * * ?", 15 ),
