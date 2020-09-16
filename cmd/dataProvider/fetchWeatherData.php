@@ -66,24 +66,28 @@ date_default_timezone_set('Europe/Berlin');
 
 //2018-04-20T11:00:00.000Z
 $date = new DateTime();
-$now = $date->format('c');
+$from_forecast = $date->format('c');
 
 $diff = new DateInterval('PT169H');
 $date = new DateTime();
 $date->add($diff);
-$to = $date->format('c');
+$to_forecast = $date->format('c');
 	
+
+$date = new DateTime();
+$to_current = $date->format('c');
+
 $diff = new DateInterval('PT1H');
 $date = new DateTime();
 $date->sub($diff);
-$from = $date->format('c');
+$from_current = $date->format('c');
 //echo $from . " - ".$to . "\n";
 
 $token = getAutorization($autorization_url,$auth);
 if( $token )
 {
-    fetchCurrent( $token, $mysql_db, $current_config, $current_url, $location, $from, $now );
-    fetchForecast( $token, $mysql_db, $forecast_config, $forecast_url, $location, $now, $to );
+    fetchCurrent( $token, $mysql_db, $current_config, $current_url, $location, $from_current, $to_current );
+    fetchForecast( $token, $mysql_db, $forecast_config, $forecast_url, $location, $from_forecast, $to_forecast );
     updateOpenhab( $collect_forcasts, $mysql_db, $openhab_rest );
 }
 
@@ -143,6 +147,11 @@ function fetchCurrent( $token, $mysql_db, $config, $url, $location, $from, $to )
 		
 		foreach( $data->{'observations'} as $observation )
 		{
+            if( !property_exists($observation,'observedFrom') )
+            {
+                continue;
+            }
+            
 			$key = $observation->{'observedFrom'};
 		
             $update_values = array();

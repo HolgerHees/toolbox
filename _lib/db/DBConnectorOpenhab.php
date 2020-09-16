@@ -34,6 +34,29 @@ class DBConnectorOpenhab extends DBConnector
         $this->query( "ALTER TABLE `" . $itemTable . "` CHANGE `time` `time` TIMESTAMP(3) on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP" );
     }
     
+    public function countItemValues( $itemTable, $from, $to )
+    {
+      $sql = "SELECT COUNT(*) AS 'count' FROM " . $itemTable;
+      if( $from != null or $to != null )
+      {
+        $sql .= " WHERE";
+        if( $from != null ) 
+        {
+          $sql .= "`time` >= '".$from->format("Y-m-d H:i:s")."'";
+          if( $to != null ) $sql .= "AND ";
+        }
+        if( $to != null ) $sql .= "`time` <= '".$to->format("Y-m-d H:i:s")."'";
+      }
+      
+      $result = $this->query( $sql );
+      if( $result->num_rows > 0 )
+      {
+          return $result->fetch_assoc()['count'];
+      }
+      
+      return -1;
+    }
+    
     public function showItemFields( $itemTable )
     {
         $entries = array();
