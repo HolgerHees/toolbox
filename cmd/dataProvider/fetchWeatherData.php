@@ -75,10 +75,12 @@ $to_forecast = $date->format('c');
 	
 
 $date = new DateTime();
+//$date = new DateTime('2020-09-16 18:00:04');
 $to_current = $date->format('c');
 
 $diff = new DateInterval('PT1H');
 $date = new DateTime();
+//$date = new DateTime('2020-09-16 18:00:04');
 $date->sub($diff);
 $from_current = $date->format('c');
 //echo $from . " - ".$to . "\n";
@@ -157,6 +159,11 @@ function fetchCurrent( $token, $mysql_db, $config, $url, $location, $from, $to )
             $update_values = array();
             foreach( $fields as $field )
             {
+                if( !property_exists($observation,$field) )
+                {
+                    print_r($data);
+                    print_r($observation);
+                }
                 $update_values[] = "`".$field."`='".$observation->{$field}."'";
             }
             
