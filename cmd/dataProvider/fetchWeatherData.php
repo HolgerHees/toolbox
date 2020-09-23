@@ -47,7 +47,7 @@ $current_config = array(
 
 $collect_forcasts = array(
 	'0' => array(
-		"windDirectionInDegree" => 'Wind_Direction', 
+        "airTemperatureInCelsius" => 'Temperature_Garden_Current',
 		"effectiveCloudCoverInOcta" => 'Cloud_Cover_Current'
 	),
 	'4' => array(
@@ -75,12 +75,12 @@ $to_forecast = $date->format('c');
 	
 
 $date = new DateTime();
-//$date = new DateTime('2020-09-16 18:00:04');
+//$date = new DateTime('2020-09-16T18:59:59');
 $to_current = $date->format('c');
 
-$diff = new DateInterval('PT1H');
+$diff = new DateInterval('PT2H');
 $date = new DateTime();
-//$date = new DateTime('2020-09-16 18:00:04');
+//$date = new DateTime('2020-09-16T18:59:59');
 $date->sub($diff);
 $from_current = $date->format('c');
 //echo $from . " - ".$to . "\n";
@@ -147,9 +147,10 @@ function fetchCurrent( $token, $mysql_db, $config, $url, $location, $from, $to )
 		if( !$data ) throw new Exception("unable to parse result from " . $_url );
 		if( !isset($data->{'observations'}) ) throw new Exception("unable to get observations from " . $_url . " " . print_r($data,true) );
 		
+		$i = 0;
 		foreach( $data->{'observations'} as $observation )
 		{
-            if( !property_exists($observation,'observedFrom') )
+            if( count((array)$observation) != 10 )
             {
                 continue;
             }
@@ -159,15 +160,18 @@ function fetchCurrent( $token, $mysql_db, $config, $url, $location, $from, $to )
             $update_values = array();
             foreach( $fields as $field )
             {
-                if( !property_exists($observation,$field) )
-                {
-                    print_r($data);
-                    print_r($observation);
-                }
                 $update_values[] = "`".$field."`='".$observation->{$field}."'";
             }
             
             $mysql_db->updateWeatcherData("from_unixtime(".strtotime($key).")",$update_values);
+
+            $i++;
+        }
+        
+        if( $i == 0 )
+        {
+            print_r($data);
+            throw new Exception("wrong current values");
         }
     }
 }
@@ -241,7 +245,8 @@ function fetchForecast( $token, $mysql_db, $config, $url, $location, $from, $to 
     {
         if( count($values) != 16 )
         {
-            throw new Exception("no values");
+            print_r($values);
+            throw new Exception("wrong forecast values");
         }
         
         $insert_values = array( "`datetime`=from_unixtime(".strtotime($values['validFrom']).")" );

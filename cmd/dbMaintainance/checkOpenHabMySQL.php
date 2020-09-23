@@ -26,6 +26,12 @@ foreach( $itemMap as $itemName => $itemTable )
 {
     $fields = $mysql_db->showItemFields( $itemTable );
     
+    if( !isset($itemTypes[$itemName]) )
+    {
+        Logger::log( Logger::LEVEL_WARNING, "Unexpected table '". $itemName . "' found");
+        continue;
+    }
+    
     $currentItemType = $itemTypes[$itemName];
     
     $wantedDataType = strtolower( $mappings[ strtoupper( $currentItemType ) ] );
