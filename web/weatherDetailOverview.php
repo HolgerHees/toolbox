@@ -1,8 +1,8 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0">
-<link rel="stylesheet" href="/static/theme/css/theme.css">
-<link rel="stylesheet" href="/static/theme/css/panelui.css">
+<link rel="stylesheet" href="/static/custom/habpanel/css/theme.css">
+<link rel="stylesheet" href="/static/custom/habpanel/css/panelui.css">
 <style>
 .mxWidget * {
     box-sizing: border-box;
