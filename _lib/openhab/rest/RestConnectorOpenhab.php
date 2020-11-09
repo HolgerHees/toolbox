@@ -8,15 +8,16 @@ class RestConnectorOpenhab
     /**
      * Converter constructor.
      */
-    public function __construct( $ip, $port )
+    public function __construct( $ip, $port, $protocol )
     {
         $this->ip = $ip;
         $this->port = $port;
+        $this->protocol = $protocol;
     }
     
     public function getItemTypes()
     {
-        $result = Request::makeRequest( "http://" . $this->ip . ":" . $this->port . "/rest/items?recursive=false",
+        $result = Request::makeRequest( $this->protocol . "://" . $this->ip . ":" . $this->port . "/rest/items?recursive=false",
             array( "Accept: application/json" ),
             null,
             200
@@ -34,7 +35,7 @@ class RestConnectorOpenhab
 
     public function getItems( $allowedItems, $allowedGroups )
     {
-        $result = Request::makeRequest( "http://" . $this->ip . ":" . $this->port . "/rest/items?recursive=false",
+        $result = Request::makeRequest( $this->protocol . "://" . $this->ip . ":" . $this->port . "/rest/items?recursive=false",
             array( "Accept: application/json" ),
             null,
             200
@@ -64,7 +65,7 @@ class RestConnectorOpenhab
     
     public function getItemGroups()
     {
-        $result = Request::makeRequest( "http://" . $this->ip . ":" . $this->port . "/rest/items?recursive=false",
+        $result = Request::makeRequest( $this->protocol . "://" . $this->ip . ":" . $this->port . "/rest/items?recursive=false",
             array( "Accept: application/json" ),
             null,
             200
@@ -82,7 +83,7 @@ class RestConnectorOpenhab
     
     public function updateItem($item,$value)
     {
-        $result = Request::makeRequest( "http://" . $this->ip . ":" . $this->port . "/rest/items/" . $item,
+        $result = Request::makeRequest( $this->protocol . "://" . $this->ip . ":" . $this->port . "/rest/items/" . $item,
             array( "Accept: application/json", "Content-Type: text/plain" ),
             $value,
             200
