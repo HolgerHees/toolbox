@@ -28,7 +28,7 @@ foreach( $itemMap as $itemName => $itemTable )
     
     if( !isset($itemTypes[$itemName]) )
     {
-        Logger::log( Logger::LEVEL_WARNING, "Unexpected table '". $itemName . "' found");
+        Logger::log( Logger::LEVEL_WARNING, "Unexpected table '". $itemName . "' => '" . $itemTable . "' found");
         continue;
     }
     
@@ -44,7 +44,7 @@ foreach( $itemMap as $itemName => $itemTable )
         }
     }
     
-    if( $fields['Time'] != 'timestamp(3)' )
+    if( strpos($fields['Time'],'timestamp(3)') !== 0 )
     {
         Logger::log( Logger::LEVEL_ERR, $itemName . " (" . $itemTable . ") has wrong timestamp" );
         
@@ -62,6 +62,6 @@ foreach( $itemMap as $itemName => $itemTable )
     }
     else
     {
-        Logger::log( Logger::LEVEL_INFO, $itemName . "(" . $itemTable . ", " . $currentItemType . " => " . $wantedDataType . ")" . " is ok" );
+        #Logger::log( Logger::LEVEL_INFO, $itemName . "(" . $itemTable . ", " . $currentItemType . " => " . $wantedDataType . ")" . " is ok" );
     }
 }

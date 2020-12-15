@@ -8,15 +8,15 @@ $influx_db = Setup::getOpenHabInfluxDB();
 $rest = Setup::getOpenHabRest();
 
 $allowed_groups = array(
-    "PersistentHistory",
-    "Sensor_Window_FF",
-    "Sensor_Window_SF"
+    "gPersistance_History",
+    "gGF_Sensor_Window",
+    "gFF_Sensor_Window"
 );
 $allowed_items = array(
-    "Motiondetector_FF_Floor",
-    "Motiondetector_FF_Livingroom",
-    "Motiondetector_SF_Floor",
-    "Door_FF_Floor"
+    "pGF_Corridor_Motiondetector_State",
+    "pGF_Livingroom_Motiondetector_State",
+    "pFF_Corridor_Motiondetector_State",
+    "pGF_Corridor_Openingcontact_Door_State"
 );
 
 $chart_group = "PersistentChart";
