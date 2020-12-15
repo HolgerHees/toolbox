@@ -47,16 +47,16 @@ $current_config = array(
 
 $collect_forcasts = array(
 	'0' => array(
-        "airTemperatureInCelsius" => 'Temperature_Garden_Current',
-		"effectiveCloudCoverInOcta" => 'Cloud_Cover_Current'
+        "airTemperatureInCelsius" => 'pOutdoor_Weather_Current_Temperature',
+		"effectiveCloudCoverInOcta" => 'pOutdoor_Weather_Current_Cloud_Cover'
 	),
 	'4' => array(
-		"airTemperatureInCelsius" => 'Temperature_Garden_Forecast4', 
-		"effectiveCloudCoverInOcta" => 'Cloud_Cover_Forecast4'
+		"airTemperatureInCelsius" => 'pOutdoor_Weather_Forecast_Temperature_4h', 
+		"effectiveCloudCoverInOcta" => 'pOutdoor_Weather_Forecast_Cloud_Cover_4h'
 	),
 	'8' => array(
-		"airTemperatureInCelsius" => 'Temperature_Garden_Forecast8', 
-		"effectiveCloudCoverInOcta" => 'Cloud_Cover_Forecast8'
+		"airTemperatureInCelsius" => 'pOutdoor_Weather_Forecast_Temperature_8h', 
+		"effectiveCloudCoverInOcta" => 'pOutdoor_Weather_Forecast_Cloud_Cover_8h'
 	),
 );
 
