@@ -23,6 +23,8 @@ $chart_group = "PersistentChart";
 
 $item_groups = $rest->getItemGroups();
 
+$dryRun = true;
+
 //print_r($item_groups);
 
 $itemMap = $mysql_db->selectItemMap( "items" );
@@ -32,7 +34,7 @@ foreach( $itemMap as $itemName => $itemTable )
     if( !isset( $item_groups[$itemName] ) )
     {
         Logger::log( Logger::LEVEL_INFO, $itemName . " (" . $itemTable . ") does not exists in openhab anymore" );
-        //$mysql_db->dropItemTable($itemTable,$itemName);
+        if( !$dryRun ) $mysql_db->dropItemTable($itemTable,$itemName);
         continue;
     }
 
@@ -45,7 +47,7 @@ foreach( $itemMap as $itemName => $itemTable )
     )
     {
         Logger::log( Logger::LEVEL_INFO, $itemName . " (" . $itemTable . ") should not be tracked" );
-        //$mysql_db->dropItemTable($itemTable,$itemName);
+        if( !$dryRun ) $mysql_db->dropItemTable($itemTable,$itemName);
         continue;
     }
 }
@@ -57,7 +59,7 @@ foreach( $tables as $table )
     if( !isset( $item_groups[$table] ) or !in_array( $chart_group, $item_groups[$table] ) )
     {
         Logger::log( Logger::LEVEL_INFO, $table . " should not exists in influxdb anymore" );
-        //$influx_db->dropTable( $table );
+        if( !$dryRun ) $influx_db->dropTable( $table );
         continue;
     }
 }

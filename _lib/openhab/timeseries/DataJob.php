@@ -26,14 +26,14 @@ class DataJob
     {
         $itemMap = $this->mysql_db->selectItemMap();
 
-        $result = Request::makeRequest( "http://192.168.0.50:8080/rest/items?recursive=false",
-            array( "Accept: application/json" ),
-            null,
-            200
-        );
-
+        #$result = Request::makeRequest( "http://192.168.0.50:8080/rest/items?recursive=false",
+        #    array( "Accept: application/json" ),
+        #    null,
+        #    200
+        #);
+    
         $chartEntries = $this->rest->getItems( $this->allowedItems, $allowedGroups );
-
+        
         foreach( $chartEntries as $entry )
         {
             if( empty( $itemMap[$entry] ) && !isset( $specialItems[$entry] ) )
@@ -41,6 +41,10 @@ class DataJob
                 Logger::log( Logger::LEVEL_WARNING, "SKIP " . $entry . ". No Data found" );
                 continue;
             }
+            #else
+            #{
+            #    Logger::log( Logger::LEVEL_INFO, "Handle " . $entry );
+            #}
 
             //echo "HANDLE: " . $entry . "\n";
             if( !$this->dryRun )
@@ -73,17 +77,17 @@ class DataJob
     {
         $itemMap = $this->mysql_db->selectItemMap();
 
-        $result = Request::makeRequest( "http://192.168.0.50:8080/rest/items?recursive=false",
-            array( "Accept: application/json" ),
-            null,
-            200
-        );
+        #$result = Request::makeRequest( "http://192.168.0.50:8080/rest/items?recursive=false",
+        #    array( "Accept: application/json" ),
+        #    null,
+        #    200
+        #);
 
         $chartEntries = $this->rest->getItems( $this->allowedItems, $allowedGroups );
 
         foreach( $chartEntries as $entry )
         {
-            echo $entry;
+            #Logger::log( Logger::LEVEL_INFO, $entry );  
             
             if( empty( $itemMap[$entry] ) || !isset( $specialItems[$entry] ) )
             {
@@ -97,7 +101,7 @@ class DataJob
             
             $start = count($data);
             
-            $maxTime = new DateTime( $entry == "Electricity_Current_Daily_Demand" ? "2019-05-08 08:03:00" : "2019-05-06 08:06:00" );
+            $maxTime = new DateTime( $entry == "pGF_Utilityroom_Electricity_Current_Daily_Demand" ? "2019-05-08 08:03:00" : "2019-05-06 08:06:00" );
             $maxTime = $maxTime->getTimestamp();
             
             if( !$this->dryRun )
@@ -130,7 +134,7 @@ class DataJob
               }
             }
             
-            echo $entry . " from " . $start . " to " . count($data) . "\n";
+            #Logger::log( Logger::LEVEL_INFO, $entry . " from " . $start . " to " . count($data) );  
             
             if( !$this->dryRun )
             {

@@ -40,7 +40,7 @@ class RestConnectorOpenhab
             null,
             200
         );
-
+        
         $chartEntries = array();
         $entries = json_decode( $result );
         foreach( $entries as $entry )
