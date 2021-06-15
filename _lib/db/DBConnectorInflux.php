@@ -8,19 +8,25 @@ class DBConnectorInflux
     private $pass;
     private $database;
 
-    public function __construct( $host, $port, $user, $pass, $database )
+    public function __construct( $host, $port, $database, $pass, $user)
     {
         $this->host = $host;
         $this->port = $port;
-        $this->user = $user;
-        $this->pass = $pass;
         $this->database = $database;
+        $this->pass = $pass;
+        $this->user = $user;
     }
 
     public function getTables()
     {
+        $fields = array( "Accept: application/json" );
+        if( !$this->user ) 
+        {
+            $fields[] = "Authorization: Token " . $this->pass;
+        }
+    
         $result = Request::makeRequest( "http://" . $this->host . ":" . $this->port . "/query?db=" . $this->database . "&q=SHOW%20MEASUREMENTS%20LIMIT%20100&epoch=ms",
-            array( "Accept: application/json" ),
+            $fields,
             null,
             200
         );
@@ -51,9 +57,20 @@ class DBConnectorInflux
                     $postData[] = $itemName . " value=" . $value[0] . " " . $value[1];
                 }
 
+                $fields = array( "Content-Type: text/plain" );
+                if( $this->user ) 
+                {
+                    $auth = "u=" . $this->user . "&p=" . $this->pass . "&";
+                }
+                else 
+                {
+                    $auth = "";
+                    $fields[] = "Authorization: Token " . $this->pass;
+                }
+                
                 Request::makeRequest(
-                    "http://" . $this->host . ":" . $this->port . "/write?u=" . $this->user . "&p=" . $this->pass . "&db=" . $this->database . "&rp=autogen&precision=s&consistency=one",
-                    array( "Content-Type: text/plain" ),
+                    "http://" . $this->host . ":" . $this->port . "/write?" . $auth . "db=" . $this->database . "&rp=autogen&precision=s&consistency=one",
+                    $fields,
                     implode( "\n", $postData ), 204
                 );
             }
@@ -64,9 +81,20 @@ class DBConnectorInflux
     {
         Logger::log( Logger::LEVEL_INFO, $targetItemName . ": drop influxdb messurement" );
 
+        $fields = array( "Content-Type: text/plain" );
+        if( $this->user ) 
+        {
+            $auth = "u=" . $this->user . "&p=" . $this->pass . "&";
+        }
+        else 
+        {
+            $auth = "";
+            $fields[] = "Authorization: Token " . $this->pass;
+        }
+
         Request::makeRequest(
-            "http://" . $this->host . ":" . $this->port . "/query?u=" . $this->user . "&p=" . $this->pass . "&chunked=true&db=" . $this->database . "&epoch=ns&q=DROP+SERIES+FROM+%22" . $targetItemName . "%22",
-            array( "Content-Type: text/plain" ),
+            "http://" . $this->host . ":" . $this->port . "/query?" . $auth . "chunked=true&db=" . $this->database . "&epoch=ns&q=DROP+SERIES+FROM+%22" . $targetItemName . "%22",
+            $fields,
             "", 200 );
 
         //Logger::log( Logger::LEVEL_INFO,  "Drop Item done" );

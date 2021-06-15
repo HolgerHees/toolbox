@@ -9,17 +9,6 @@ $allowedItems = array(
     //"Electricity_Current_Daily_Consumption",
     //"Electricity_Current_Consumption",
     //"Electricity_Current_Daily_Demand",
-    //"WeatherStation_Battery_Current",
-    //"WeatherStation_Solar_Power",
-    //"WeatherStation_Temperature",
-    //"Test3_Temperature",
-    //"Test3_TemperatureDiff",
-    //"SolarDiffLazy",
-    //"WeatherStation_Rain_Current",
-    //"WeatherStation_Rain_Daily",
-    //"WeatherStation_Wind_Current",
-    //"WeatherStation_Temperature",
-    //"WeatherStation_Humidity",
 );
 $specialItems = array(
     "pGF_Utilityroom_Gas_Current_Daily_Consumption" => new IntervalConfig( "pGF_Utilityroom_Gas_Meter_Current_Count", "daily", "0 */5 * * * ?", 20 ),
