@@ -22,7 +22,7 @@ class DataJob
         $this->dryRun = $dryRun;
     }
 
-    public function copyValues( $allowedGroups, $specialItems )
+    public function fillInfluxDBValues( $allowedGroups, $intervalConfigs )
     {
         $itemMap = $this->mysql_db->selectItemMap();
 
@@ -36,7 +36,7 @@ class DataJob
         
         foreach( $chartEntries as $entry )
         {
-            if( empty( $itemMap[$entry] ) && !isset( $specialItems[$entry] ) )
+            if( empty( $itemMap[$entry] ) && !isset( $intervalConfigs[$entry] ) )
             {
                 Logger::log( Logger::LEVEL_WARNING, "SKIP " . $entry . ". No Data found" );
                 continue;
@@ -52,9 +52,9 @@ class DataJob
                 $this->influx_db->dropTable( $entry );
             }
 
-            if( isset( $specialItems[$entry] ) )
+            if( isset( $intervalConfigs[$entry] ) )
             {
-                $entries = $this->calculator->generateValues( $entry, $specialItems[$entry], $itemMap );
+                $entries = $this->calculator->generateValues( $entry, $intervalConfigs[$entry], $itemMap );
             }
             else
             {
@@ -73,7 +73,7 @@ class DataJob
         }
     }
     
-    public function generateValues( $allowedGroups, $specialItems )
+    public function generateMySQLIntervalValues( $allowedGroups, $intervalConfigs )
     {
         $itemMap = $this->mysql_db->selectItemMap();
 
@@ -89,13 +89,13 @@ class DataJob
         {
             #Logger::log( Logger::LEVEL_INFO, $entry );  
             
-            if( empty( $itemMap[$entry] ) || !isset( $specialItems[$entry] ) )
+            if( empty( $itemMap[$entry] ) || !isset( $intervalConfigs[$entry] ) )
             {
                 Logger::log( Logger::LEVEL_WARNING, "SKIP " . $entry . ". No Data found" );
                 continue;
             }
 
-            $entries = $this->calculator->generateValues( $entry, $specialItems[$entry], $itemMap );
+            $entries = $this->calculator->generateValues( $entry, $intervalConfigs[$entry], $itemMap );
 
             $data = $this->calculator->fillHourlyData( $entry, $entries );
             

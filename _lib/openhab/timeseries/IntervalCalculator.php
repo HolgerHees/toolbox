@@ -20,10 +20,10 @@ class IntervalCalculator
      */
     public function __construct( DBConnectorOpenhab $db, $timezone, $detailedLog )
     {
-        date_default_timezone_set( $timezone );
+        date_default_timezone_set( $timezone->getName() );
 
         $this->db = $db;
-        $this->timezone = new DateTimezone( $timezone );
+        $this->timezone = $timezone;
         $this->detailedLog = $detailedLog;
 
         $this->startTime = time();

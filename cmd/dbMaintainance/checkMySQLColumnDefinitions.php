@@ -3,6 +3,19 @@ include dirname(__FILE__) . "/../../_lib/init.php";
 
 Logger::init( "import" );
 
+$arg_config = array(
+    'dry'     => array(false,array("true","false"),function($val){ return empty($val) ? true : ( $val == "true" ? true : false ); }),
+);
+
+$result = CmdArgs::processOptions($arg_config);
+if( !is_array( $result ) )
+{
+    echo $result;
+    exit(1);
+}
+
+$dryRun = $result['dry'];
+
 $mappings = array(
     "COLOR" => "VARCHAR(70)",
     "CONTACT" => "VARCHAR(6)",
@@ -15,10 +28,10 @@ $mappings = array(
     "SWITCH" => "VARCHAR(6)"
 );
 
-$mysql_db = Setup::getOpenHabMysql();
-$rest = Setup::getOpenHabRest();
+$mysql_db = SystemConfig::getOpenHabMysql();
+$rest = SystemConfig::getOpenHabRest();
 
-$itemMap = $mysql_db->selectItemMap( "items" );
+$itemMap = $mysql_db->selectItemMap();
 
 $itemTypes = $rest->getItemTypes();
 
@@ -48,7 +61,7 @@ foreach( $itemMap as $itemName => $itemTable )
     {
         Logger::log( Logger::LEVEL_ERR, $itemName . " (" . $itemTable . ") has wrong timestamp" );
         
-        //$mysql_db->alterItemTimestamp( $itemTable );
+        if( !$dryRun ) $mysql_db->alterItemTimestamp( $itemTable );
     }
     
     if( $wantedDataType != $fields['Value'] )

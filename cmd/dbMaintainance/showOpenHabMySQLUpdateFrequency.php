@@ -3,10 +3,10 @@ include dirname(__FILE__) . "/../../_lib/init.php";
 
 Logger::init( "import" );
 
-$mysql_db = Setup::getOpenHabMysql();
-$rest = Setup::getOpenHabRest();
+$mysql_db = SystemConfig::getOpenHabMysql();
+$rest = SystemConfig::getOpenHabRest();
 
-$itemMap = $mysql_db->selectItemMap( "items" );
+$itemMap = $mysql_db->selectItemMap();
 
 $to = new DateTime();
 

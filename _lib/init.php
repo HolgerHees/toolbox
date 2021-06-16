@@ -1,5 +1,12 @@
 <?php
-include dirname(__FILE__) . "/config.php";
+if( !file_exists( dirname(__FILE__) . "/config/environment.php" ) )
+{
+    echo "\nERROR: No environment configuration found in '" . dirname(__FILE__) . "/config/environment.php" . "'\n\n";
+    exit(1);
+}
+
+include dirname(__FILE__) . "/config/system.php";
+include dirname(__FILE__) . "/config/environment.php";
 
 date_default_timezone_set('Europe/Berlin');
 

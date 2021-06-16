@@ -10,7 +10,7 @@ class DBConnectorOpenhab extends DBConnector
     public function dropItemTable( $itemTable, $itemName )
     {
         $this->query( "DROP TABLE " . $itemTable );
-        $this->query( "DELETE FROM items WHERE `ItemName` = '" . $itemName . "'" );
+        $this->query( "DELETE FROM items WHERE `itemname` = '" . $itemName . "'" );
     }
 
     public function selectItemMap()
@@ -23,7 +23,7 @@ class DBConnectorOpenhab extends DBConnector
         {
             while( $data = $result->fetch_assoc() )
             {
-                $entries[$data['ItemName']] = "Item" . $data['ItemId'];
+                $entries[$data['itemname']] = "Item" . $data['itemid'];
             }
         }
         return $entries;
