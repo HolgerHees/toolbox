@@ -91,11 +91,16 @@ class DBConnectorInflux
             $auth = "";
             $fields[] = "Authorization: Token " . $this->pass;
         }
-
+        
+        $postData = array();
+        $postData["predicate"] = "_measurement=\"" . $targetItemName . "\"";
+        $postData["start"] = "1970-01-01T00:00:00Z";
+        $postData["stop"] = "2200-01-01T00:00:00Z";
+        
         Request::makeRequest(
-            "http://" . $this->host . ":" . $this->port . "/query?" . $auth . "chunked=true&db=" . $this->database . "&epoch=ns&q=DROP+SERIES+FROM+%22" . $targetItemName . "%22",
+            "http://" . $this->host . ":" . $this->port . "/api/v2/delete?org=default-org&bucket=" . $this->database,
             $fields,
-            "", 200 );
+            json_encode($postData), 204 );
 
         //Logger::log( Logger::LEVEL_INFO,  "Drop Item done" );
     }

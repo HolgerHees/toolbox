@@ -18,7 +18,7 @@ if( !is_array( $result ) )
 
 $dryRun = $result['dry'];
 $detailedLog = $result['verbose'];
-$allowedItems = $result['items'] == 'all' ? array() : $result['items'];
+$allowedItems = $result['items'] == 'all' ? array() : explode(",",$result['items']);
 
 $intervalConfigs = Environment::getInfluxDBIntervalConfigs();
 $dbGroups = Environment::getInfluxPersistanceGroups();
