@@ -22,8 +22,6 @@ $rest = SystemConfig::getOpenHabRest();
 
 $db_groups = Environment::getMySQLPersistanceGroups();
 
-$chart_groups = Environment::getInfluxDBOpenHABGroups();
-
 $item_groups = $rest->getItemGroups();
 
 $itemMap = $mysql_db->selectItemMap();
@@ -43,18 +41,6 @@ foreach( $itemMap as $itemName => $itemTable )
     {
         Logger::log( Logger::LEVEL_INFO, $itemName . " (" . $itemTable . ") should not be tracked" );
         if( !$dryRun ) $mysql_db->dropItemTable($itemTable,$itemName);
-        continue;
-    }
-}
-
-$tables = $influx_db->getTables();
-
-foreach( $tables as $table )
-{
-    if( !isset( $item_groups[$table] ) or empty( array_intersect( $chart_group, $item_groups[$table] ) ) )
-    {
-        Logger::log( Logger::LEVEL_INFO, $table . " should not exists in influxdb anymore" );
-        if( !$dryRun ) $influx_db->dropTable( $table );
         continue;
     }
 }
