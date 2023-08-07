@@ -5,7 +5,7 @@ class CmdArgs
     {
         $usage_msg = "\n";
         $usage_msg .= "Usage:\n";
-        $usage_msg .= "\tdocker exec -it php sh -c \"php -d memory_limit=4096M -f " . __FILE__ . " --";
+        $usage_msg .= "\tdocker exec -it php sh -c \"php -d memory_limit=4096M -f " . $_SERVER["PHP_SELF"] . " --";
         foreach( $arg_config as $name => $value )
         {
             $usage_msg .= " ";
